@@ -3,11 +3,11 @@ import { Types } from 'mongoose';
 import Playlist from '../models/playlist.model';
 import User from '../../auth/models/User';
 
+
 // Create a playlist
 const createPlaylist = async (req: Request, res: Response): Promise<void> => {
-    console.log('createPlaylist');
     try {
-        const userId = (req as any).user.userId;  // Extracted from JWT middleware
+        const userId = (req as any).user.id  // Extracted from JWT middleware
         const { name, description } = req.body;
 
 
@@ -31,7 +31,7 @@ const createPlaylist = async (req: Request, res: Response): Promise<void> => {
         });
 
         const savedPlaylist = await newPlaylist.save();
-        user.playlists.push(savedPlaylist._id);
+        user.playlists.push(savedPlaylist._id as any);
         await user.save();
 
         res.status(201).json(savedPlaylist);
@@ -44,7 +44,7 @@ const createPlaylist = async (req: Request, res: Response): Promise<void> => {
 // Get all playlists for a user
 const getUserPlaylists = async (req: Request, res: Response): Promise<void> => {
     try {
-        const userId = (req as any).user.userId;  // Extracted from JWT middleware
+        const userId = (req as any).user.id
 
         if (!Types.ObjectId.isValid(userId)) {
             res.status(400).json({ message: 'Invalid user ID' });
@@ -64,7 +64,8 @@ const addSongToPlaylist = async (req: Request, res: Response): Promise<void> => 
     try {
         const { playlistId } = req.params;
         const { songId } = req.body;
-        const userId = (req as any).user.userId;  // Extracted from JWT middleware
+        const userId = (req as any).user.id
+
 
         if (!Types.ObjectId.isValid(playlistId) || !Types.ObjectId.isValid(songId)) {
             res.status(400).json({ message: 'Invalid playlist or song ID' });
@@ -96,7 +97,9 @@ const removeSongFromPlaylist = async (req: Request, res: Response): Promise<void
     try {
         const { playlistId } = req.params;
         const { songId } = req.body;
-        const userId = (req as any).user.userId;  // Extracted from JWT middleware
+
+        const userId = (req as any).user.id
+
 
         if (!Types.ObjectId.isValid(playlistId) || !Types.ObjectId.isValid(songId)) {
             res.status(400).json({ message: 'Invalid playlist or song ID' });
@@ -125,7 +128,8 @@ const removeSongFromPlaylist = async (req: Request, res: Response): Promise<void
 const deletePlaylist = async (req: Request, res: Response): Promise<void> => {
     try {
         const { playlistId } = req.params;
-        const userId = (req as any).user.userId;  // Extracted from JWT middleware
+        const userId = (req as any).user.id;  // Extracted from JWT middleware
+
 
         if (!Types.ObjectId.isValid(playlistId)) {
             res.status(400).json({ message: 'Invalid playlist ID' });
@@ -142,7 +146,7 @@ const deletePlaylist = async (req: Request, res: Response): Promise<void> => {
         // Remove playlist reference from user
         const user = await User.findById(playlist.user);
         if (user) {
-            user.playlists = user.playlists.filter(id => !id.equals(playlist._id));
+            user.playlists = user.playlists.filter(id => !id.equals(playlist._id as any));
             await user.save();
         }
 

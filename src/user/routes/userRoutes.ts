@@ -1,15 +1,14 @@
 import { Router } from 'express';
-import { addFavoriteSong, removeFavoriteSong, createPlaylist, addSongToPlaylist, removeSongFromPlaylist } from '../controllers/userController';
+import { addFavoriteSong, removeFavoriteSong, getFavoriteSongs } from '../controllers/userController';
+import { authMiddleware } from '../../auth/middlewares/auth-middleware';
+
 
 const router = Router();
 
-// Favorites
-router.post('/:userId/favorites', addFavoriteSong);
-router.delete('/:userId/favorites', removeFavoriteSong);
+router.use(authMiddleware); // Apply authentication middleware to all routes
 
-// Playlists
-router.post('/:userId/playlists', createPlaylist);
-router.post('/:userId/playlists/:playlistId/songs', addSongToPlaylist);
-router.delete('/:userId/playlists/:playlistId/songs', removeSongFromPlaylist);
+router.get('/favorites', getFavoriteSongs);
+router.post('/favorites', addFavoriteSong);
+router.delete('/favorites', removeFavoriteSong);
 
 export default router;

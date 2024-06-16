@@ -11,6 +11,9 @@ import albumRoutes from './album/routes/albumRoutes';
 import userRoutes from './user/routes/userRoutes';
 import playlistRoutes from './playlist/routes/playlistRoutes';
 
+import bodyParser from 'body-parser';
+
+
 
 dotenv.config();
 
@@ -22,6 +25,9 @@ app.use(cors({
 }));
 app.use(json());
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 app.get('/', (req, res) => {
     res.send('Hello, World!');
@@ -31,7 +37,8 @@ app.use('/api', router);
 app.use('/api/songs', songRoutes);
 app.use('/api/artists', artistRoutes);
 app.use('/api/albums', albumRoutes);
-
+app.use('/api/users', userRoutes);
+app.use('/api/playlists', playlistRoutes);
 
 app.listen(8000, () => {
     console.log('Server running on port 8000');
