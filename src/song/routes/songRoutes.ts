@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { createSong } from '../controllers/songController';
+import { createSong, getSong, updateSong, deleteSong } from '../controllers/songController';
 
 const upload = multer();
 
 const router = Router();
 
-router.post('/', upload.single('file'), createSong);
-
-// Add other CRUD routes here (GET, PUT, DELETE)
+router.post('/', upload.fields([{ name: 'songFile', maxCount: 1 }, { name: 'coverImage', maxCount: 1 }]), createSong);
+router.get('/:uuid', getSong);
+router.put('/:uuid', updateSong);
+router.delete('/:uuid', deleteSong);
 
 export default router;
