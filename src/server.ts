@@ -6,6 +6,7 @@ import json  from 'body-parser';
 import router from './global-router';
 import connectDb from './db';
 import songRoutes from './song/routes/songRoutes';
+import artistRoutes from './artist/routes/artistRoutes';
 
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', router);
 app.use('/api/songs', songRoutes);
+app.use('/api/artists', artistRoutes);
 
 app.listen(8000, () => {
     console.log('Server running on port 8000');

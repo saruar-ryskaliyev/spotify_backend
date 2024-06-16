@@ -7,8 +7,8 @@ const upload = multer();
 const router = Router();
 
 router.post('/', upload.fields([{ name: 'songFile', maxCount: 1 }, { name: 'coverImage', maxCount: 1 }]), createSong);
-router.get('/:uuid', getSong);
-router.put('/:uuid', updateSong);
-router.delete('/:uuid', deleteSong);
+router.get('/:id', getSong);
+router.put('/:id', updateSong);
+router.delete('/:id', deleteSong);
 
 export default router;

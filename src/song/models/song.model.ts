@@ -1,9 +1,9 @@
-import { Document, model, Schema } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
 
 interface ISong extends Document {
-    uuid: string;
+    _id: Types.ObjectId;
     title: string;
-    artist: string;
+    artist: Types.ObjectId;
     album: string;
     year: number;
     genre: string;
@@ -12,9 +12,8 @@ interface ISong extends Document {
 }
 
 const songSchema = new Schema<ISong>({
-    uuid: { type: String, required: true, unique: true},
     title: { type: String, required: true },
-    artist: { type: String, required: true },
+    artist: { type: Schema.Types.ObjectId, ref: 'Artist', required: true },
     album: { type: String, required: true },
     year: { type: Number, required: true },
     genre: { type: String, required: true },
