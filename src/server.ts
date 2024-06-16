@@ -8,6 +8,8 @@ import connectDb from './db';
 import songRoutes from './song/routes/songRoutes';
 import artistRoutes from './artist/routes/artistRoutes';
 import albumRoutes from './album/routes/albumRoutes';
+import userRoutes from './user/routes/userRoutes';
+import playlistRoutes from './playlist/routes/playlistRoutes';
 
 
 dotenv.config();
@@ -29,6 +31,7 @@ app.use('/api', router);
 app.use('/api/songs', songRoutes);
 app.use('/api/artists', artistRoutes);
 app.use('/api/albums', albumRoutes);
+
 
 app.listen(8000, () => {
     console.log('Server running on port 8000');

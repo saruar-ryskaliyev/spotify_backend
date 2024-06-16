@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import AuthService from '../auth-service';
+import jwt from 'jsonwebtoken';
 
 const authService = new AuthService();
+
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
