@@ -1,7 +1,7 @@
 export interface CreateSongDto {
     title: string;
     artistId: string;
-    album: string;
+    albumId?: string; 
     year: number;
     genre: string;
 }
