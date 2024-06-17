@@ -99,16 +99,27 @@ const searchArtists = async (req: Request, res: Response): Promise<void> => {
 
 const getArtistById = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id } = req.params;
-        const artist = await Artist.findById(id).populate('songs');
-        if (!artist) {
-            res.status(404).json({ message: 'Artist not found' });
-            return;
-        }
-        res.status(200).json(artist);
+      const { id } = req.params;
+      const artist = await Artist.findById(id)
+        .populate({
+          path: 'songs',
+          model: 'Song'
+        })
+        .populate({
+          path: 'albums',
+          model: 'Album'
+        });
+  
+      if (!artist) {
+        res.status(404).json({ message: 'Artist not found' });
+        return;
+      }
+      
+      res.status(200).json(artist);
     } catch (error) {
-        res.status(500).json({ error: error });
+      res.status(500).json({ error: error });
     }
-}
+  };
+  
 
 export { createArtist, updateArtist, getArtists, searchArtists, getArtistById };

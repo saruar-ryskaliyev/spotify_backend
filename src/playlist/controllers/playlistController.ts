@@ -156,4 +156,27 @@ const deletePlaylist = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { createPlaylist, getUserPlaylists, addSongToPlaylist, removeSongFromPlaylist, deletePlaylist };
+const getPlaylistById = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { playlistId } = req.params;
+        const userId = (req as any).user.id;  // Extracted from JWT middleware
+
+        if (!Types.ObjectId.isValid(playlistId)) {
+            res.status(400).json({ message: 'Invalid playlist ID' });
+            return;
+        }
+
+        const playlist = await Playlist.findOne({ _id: playlistId, user: userId }).populate('songs');
+
+        if (!playlist) {
+            res.status(404).json({ message: 'Playlist not found' });
+            return;
+        }
+
+        res.status(200).json(playlist);
+    } catch (error) {
+        res.status(500).json({ error: (error as Error).message });
+    }
+}
+
+export { createPlaylist, getUserPlaylists, addSongToPlaylist, removeSongFromPlaylist, deletePlaylist, getPlaylistById };
