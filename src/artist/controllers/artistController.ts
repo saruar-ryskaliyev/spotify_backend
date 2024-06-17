@@ -4,6 +4,7 @@ import { uploadFile } from '../../utils/s3';
 import { CreateArtistDto, UpdateArtistDto } from '../dtos/artist.dto';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
+import Album from '../../album/models/album.model';
 
 dotenv.config();
 
@@ -97,4 +98,18 @@ const searchArtists = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { createArtist, updateArtist, getArtists, searchArtists };
+const getArtistById = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const artist = await Artist.findById(id).populate('songs');
+        if (!artist) {
+            res.status(404).json({ message: 'Artist not found' });
+            return;
+        }
+        res.status(200).json(artist);
+    } catch (error) {
+        res.status(500).json({ error: error });
+    }
+}
+
+export { createArtist, updateArtist, getArtists, searchArtists, getArtistById };
