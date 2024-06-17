@@ -4,7 +4,6 @@ import { uploadFile } from '../../utils/s3';
 import { CreateArtistDto, UpdateArtistDto } from '../dtos/artist.dto';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
-import Album from '../../album/models/album.model';
 
 dotenv.config();
 

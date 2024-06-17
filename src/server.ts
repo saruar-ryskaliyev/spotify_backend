@@ -41,6 +41,9 @@ app.use('/api/albums', albumRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/playlists', playlistRoutes);
 
+
+
+
 app.listen(8000, () => {
     console.log('Server running on port 8000');
 });

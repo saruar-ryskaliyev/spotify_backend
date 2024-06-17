@@ -5,6 +5,7 @@ interface IArtist extends Document {
     description: string;
     photoUrl: string;
     songs: Types.ObjectId[];
+    albums: Types.ObjectId[];
 }
 
 const artistSchema = new Schema<IArtist>({
@@ -12,6 +13,7 @@ const artistSchema = new Schema<IArtist>({
     description: { type: String, required: true },
     photoUrl: { type: String, required: true, unique: true },
     songs: [{ type: Schema.Types.ObjectId, ref: 'Song' }],
+    albums: [{ type: Schema.Types.ObjectId, ref: 'Album' }],
 });
 
 const Artist = model<IArtist>('Artist', artistSchema);
