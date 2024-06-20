@@ -1,17 +1,23 @@
 import { NextFunction, Request, Response } from 'express';
 import AuthService from '../auth-service';
-import jwt from 'jsonwebtoken';
 
 const authService = new AuthService();
 
-
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: 'Authorization header missing' });
+
+  let token: string | undefined;
+
+  if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies && req.cookies.accessToken) {
+    token = req.cookies.accessToken;
   }
 
-  const token = authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token missing' });
+  }
+
   const payload = authService.verifyJwt(token);
 
   if (!payload) {

@@ -4,9 +4,8 @@ import { authMiddleware } from '../../auth/middlewares/auth-middleware';
 
 const router = Router();
 
-router.use(authMiddleware); // Apply authentication middleware to all routes
+router.use(authMiddleware); 
 
-// Playlists
 router.post('/', createPlaylist);
 router.get('/', getUserPlaylists);
 router.post('/:playlistId/songs', addSongToPlaylist);

@@ -1,68 +1,61 @@
-import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import json  from 'body-parser';
 import router from './global-router';
 import connectDb from './db';
-import songRoutes from './song/routes/songRoutes';
-import artistRoutes from './artist/routes/artistRoutes';
-import albumRoutes from './album/routes/albumRoutes';
-import userRoutes from './user/routes/userRoutes';
-import playlistRoutes from './playlist/routes/playlistRoutes';
-
+import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-
-
+import { logger } from './logger';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 dotenv.config();
 
 connectDb();
 
 const app = express();
-app.use(cors({
+const server = createServer(app); // Use http.createServer instead of app.listen
+const io = new Server(server, {
+  cors: {
     origin: 'http://localhost:3000',
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  },
+});
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 app.use(json());
-
+app.use(cookieParser());
+app.use(logger);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 app.get('/', (req, res) => {
-    res.send('Hello, World!');
+  res.send('Hello, World!');
 });
 
 app.use('/api', router);
-app.use('/api/songs', songRoutes);
-app.use('/api/artists', artistRoutes);
-app.use('/api/albums', albumRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/playlists', playlistRoutes);
 
+// Socket.io connection
+io.on('connection', (socket) => {
+  console.log('a user connected');
 
+  socket.on('listen', ({ userId, song }) => {
+    console.log("HAHAHAHAHA")
+    io.emit('user-listening', { userId, song });
+  });
 
-
-app.listen(8000, () => {
-    console.log('Server running on port 8000');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
 });
 
-
-
-// const s3 = new AWS.S3({
-//     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-//     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-// });
-// (async () => {
-//     try {
-//         await s3.putObject({
-//             Bucket: 'spotifysaruar',
-//             Key: 'my_text.txt',
-//             Body: 'Hello, World!',
-//         }).promise();
-//         console.log('File uploaded successfully');
-//     } catch (error) {
-//         console.error('Error uploading file:', error);
-//     }
-// })();
+// Start the server
+server.listen(8000, () => {
+  console.log('Server running on port 8000');
+});

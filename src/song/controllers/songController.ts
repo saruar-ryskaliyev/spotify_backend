@@ -87,17 +87,29 @@ const createSong = async (req: Request, res: Response): Promise<void> => {
 
 const getSong = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id } = req.params;
-        const song: ISong | null = await Song.findById(id).populate('artist album');
-        if (!song) {
-            res.status(404).json({ message: 'Song not found' });
-            return;
-        }
-        res.status(200).json(song);
+      const { id } = req.params;
+      const song: ISong | null = await Song.findById(id)
+        .populate({
+          path: 'artist',
+          select: 'name _id',
+        })
+        .populate({
+          path: 'album',
+          select: 'title _id',
+        });
+      
+      if (!song) {
+        res.status(404).json({ message: 'Song not found' });
+        return;
+      }
+  
+      res.status(200).json(song);
     } catch (error) {
-        res.status(500).json({ error: (error as Error).message });
+      res.status(500).json({ error: (error as Error).message });
     }
-};
+  };
+  
+  
 
 const updateSong = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -155,17 +167,27 @@ const deleteSong = async (req: Request, res: Response): Promise<void> => {
 
 const searchSongs = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { q } = req.query;
-        const songs: ISong[] = await Song.find({
-            $or: [
-                { title: { $regex: q as string, $options: 'i' } },
-                { genre: { $regex: q as string, $options: 'i' } },
-            ],
-        }).populate('artist album');
-        res.status(200).json(songs);
+      const { q } = req.query;
+      const songs: ISong[] = await Song.find({
+        $or: [
+          { title: { $regex: q as string, $options: 'i' } },
+          { genre: { $regex: q as string, $options: 'i' } },
+        ],
+      })
+      .populate({
+        path: 'artist',
+        select: 'name _id',
+      })
+      .populate({
+        path: 'album',
+        select: 'title _id',
+      });
+      
+      res.status(200).json(songs);
     } catch (error) {
-        res.status(500).json({ error: (error as Error).message });
+      res.status(500).json({ error: (error as Error).message });
     }
-};
+  };
+  
 
 export { createSong, getSong, updateSong, deleteSong, searchSongs };

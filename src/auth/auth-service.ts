@@ -63,7 +63,6 @@ class AuthService {
       } else {
         results = await UserModel.find(); // Return all users if query is empty
       }
-      console.log('Search results:', results);
       return results;
     } catch (error) {
       console.error('Error in AuthService searchUsers:', error);

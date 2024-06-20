@@ -7,6 +7,8 @@ const upload = multer();
 
 const router = Router();
 
+router.use(authMiddleware);
+
 router.get('/search', searchAlbums);
 router.get('/', getAllAlbums);
 router.post('/', upload.fields([{ name: 'albumCover', maxCount: 1 }]), createAlbum);

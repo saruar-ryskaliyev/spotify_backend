@@ -36,7 +36,6 @@ const createPlaylist = async (req: Request, res: Response): Promise<void> => {
 
         res.status(201).json(savedPlaylist);
     } catch (error) {
-        console.log('Error in createPlaylist:', error);
         res.status(500).json({ error: (error as Error).message });
     }
 };
@@ -130,7 +129,6 @@ const deletePlaylist = async (req: Request, res: Response): Promise<void> => {
         const { playlistId } = req.params;
         const userId = (req as any).user.id;  // Extracted from JWT middleware
 
-
         if (!Types.ObjectId.isValid(playlistId)) {
             res.status(400).json({ message: 'Invalid playlist ID' });
             return;
@@ -159,14 +157,22 @@ const deletePlaylist = async (req: Request, res: Response): Promise<void> => {
 const getPlaylistById = async (req: Request, res: Response): Promise<void> => {
     try {
         const { playlistId } = req.params;
-        const userId = (req as any).user.id;  // Extracted from JWT middleware
+        const userId = (req as any).user.id
+
 
         if (!Types.ObjectId.isValid(playlistId)) {
             res.status(400).json({ message: 'Invalid playlist ID' });
             return;
         }
 
-        const playlist = await Playlist.findOne({ _id: playlistId, user: userId }).populate('songs');
+        const playlist = await Playlist.findOne({ _id: playlistId, user: userId })
+            .populate({
+                path: 'songs',
+                populate: {
+                    path: 'artist',
+                    select: 'name _id',
+                },
+            });
 
         if (!playlist) {
             res.status(404).json({ message: 'Playlist not found' });
@@ -175,8 +181,9 @@ const getPlaylistById = async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json(playlist);
     } catch (error) {
+        console.log('Error in getPlaylistById:', error);
         res.status(500).json({ error: (error as Error).message });
     }
-}
+};
 
 export { createPlaylist, getUserPlaylists, addSongToPlaylist, removeSongFromPlaylist, deletePlaylist, getPlaylistById };

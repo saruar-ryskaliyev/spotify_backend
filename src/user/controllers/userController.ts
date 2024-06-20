@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 import User from '../../auth/models/User';
-import Song from '../../song/models/song.model';
+import {Song} from '../../song/models/song.model';
+import {Album} from '../../album/models/album.model';
+import {Artist} from '../../artist/models/artist.model';
+
+
+
 
 const getFavoriteSongs = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -62,4 +67,43 @@ const removeFavoriteSong = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export { addFavoriteSong, removeFavoriteSong, getFavoriteSongs };
+const globalSearch = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { q } = req.query;
+
+        const songResults = await Song.find({
+            $or: [
+                { title: { $regex: q as string, $options: 'i' } },
+                { genre: { $regex: q as string, $options: 'i' } },
+           
+            ],
+        }).populate('artist').populate('album');
+
+        const albumResults = await Album.find({
+            $or: [
+                { title: { $regex: q as string, $options: 'i' } },
+                { genre: { $regex: q as string, $options: 'i' } },
+            ],
+        }).populate('artist').populate('songs');
+
+        const artistResults = await Artist.find({
+            $or: [
+                { name: { $regex: q as string, $options: 'i' } },
+                { description: { $regex: q as string, $options: 'i' } },
+            ],
+        }).populate('songs').populate('albums');
+
+        const results = {
+            songs: songResults,
+            albums: albumResults,
+            artists: artistResults,
+        };
+
+        res.status(200).json(results);
+    } catch (error) {
+        res.status(500).json({ error: (error as Error).message });
+    }
+};
+
+
+export { addFavoriteSong, removeFavoriteSong, getFavoriteSongs, globalSearch };
